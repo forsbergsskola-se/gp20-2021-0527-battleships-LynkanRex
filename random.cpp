@@ -34,5 +34,5 @@ void DoRandomLoop(int times){
 
 
 void RunRandom(){
-    DoRandomLoop(20);
+    DoRandomLoop(100);
 }
