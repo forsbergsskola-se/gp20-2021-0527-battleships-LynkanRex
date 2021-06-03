@@ -15,6 +15,9 @@ int main(){
         int num;
 
         cout << "Enter a number to choose a program, or enter 'exit' to quit;" << endl;
+        cout << "1. Fibonacci time test, Recursive method versus Iterative (for-loop) method" << endl;
+        cout << "2. Randomized number test" << endl;
+        cout << "3. Battleships" << endl;
         cin >> choice;
 
         stringstream ss;
