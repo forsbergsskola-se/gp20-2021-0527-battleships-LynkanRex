@@ -4,46 +4,112 @@
 
 #include <iostream>
 #include <sstream>
+#include <chrono>
 #include "fibonacci.h"
 using namespace std;
+using namespace chrono;
+using namespace std::literals::chrono_literals;
 
 void DoLoop();
-bool ValidateInput(string);
 bool InputIsNumber(string);
 void InitializeRecursiveFibonacci(int);
 void InitializeIterativeFibonacci(int);
 
-void RecursiveFibonacci(int, int, float);
-void RecursiveFibonacciTimer(float);
+void IterativeFibonacci(int, int, long long);
+void RecursiveFibonacci(int, int, long long);
+void PrintTimeTaken(string, long long);
 
-void IterativeFibonacci(int, int, float);
+long long CalculateFibonacciNumber(int);
 
 
-void RecursiveFibonacci(int timesLeft, int currentFib, float timer){
+long long CalculateFibonacciNumber(int fibTerm){
+    auto start = chrono::high_resolution_clock::now();
 
-    if(timesLeft <= 0)
-        RecursiveFibonacciTimer(timer);
+    int t1 = 0, t2 = 1, nextTerm = 0;
+
+    for (int i = 0; i < fibTerm; ++i) {
+        if(i == 1){
+            return t1;
+        }
+        if(i == 2){
+            return t2;
+        }
+        nextTerm = t1 + t2;
+
+        t1 = t2;
+        t2 = nextTerm;
+    }
+
+    auto elapsed = std::chrono::high_resolution_clock::now() - start;
+    long long microSeconds =  std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count();
+
+    return microSeconds;
+}
+
+void RecursiveFibonacci(int requestedIterations, int currentFibCount, long long timer){
+
+    timer += CalculateFibonacciNumber(currentFibCount);
+
+    if(requestedIterations == currentFibCount)
+        PrintTimeTaken("Recursive", timer);
     else
-        RecursiveFibonacci(timesLeft-1, currentFib, timer);
+        RecursiveFibonacci(requestedIterations, currentFibCount+1, timer);
 }
 
-void RecursiveFibonacciTimer(float timer){
-
+void PrintTimeTaken(string type, long long timeTaken){
+    cout << type << " finished in: " << timeTaken << " microseconds" << endl;
 }
 
-void IterativeFibonacci(int timesLeft, int currentFib, float timer){
+void IterativeFibonacci(int timesLeft, int currentFib, long long timer){
+    auto start = chrono::high_resolution_clock::now();
+    int t1 = 0, t2 = 1, nextTerm = 0;
 
     for (int i = 0; i < timesLeft; ++i) {
+        if(i == 1){
+            currentFib = t1;
 
+        }
+        if(i == 2){
+            currentFib = t2;
+
+        }
+        nextTerm = t1 + t2;
+
+        t1 = t2;
+        t2 = nextTerm;
     }
+
+    auto elapsed = std::chrono::high_resolution_clock::now() - start;
+
+    long long timeTaken =  std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count();
+
+    PrintTimeTaken("Iterative", timeTaken);
 }
 
 void InitializeIterativeFibonacci(int num){
-    IterativeFibonacci(num, 0, 0.0f);
+    IterativeFibonacci(num, 0, 0);
 }
 
 void InitializeRecursiveFibonacci(int num){
-    RecursiveFibonacci(num, 0, 0.0f);
+    RecursiveFibonacci(num, 0, 0);
+}
+
+bool InputIsNumber(string input){
+    if(input.empty()){
+        cout << "Input was empty, please enter something" << endl;
+        return 0;
+    }
+    else{
+        for (int i = 0; i < input.length(); ++i) {
+            if(!isdigit(input[i])){
+                if(input[i] == '-')
+                    continue;
+                cout << "Input given contained something that was not a digit at " << input[i] << endl;
+                return 0;
+            }
+        }
+        return 1;
+    }
 }
 
 void DoLoop(){
@@ -51,19 +117,21 @@ void DoLoop(){
      string input = "";
      int num = 0;
 
+     cout << "Fibonacci numbers calculation time in Recursive vs Iterative mode, please enter how many terms you would like the calculation to take" << endl;
+     cin >> input;
+
      if(input == "exit")
          break;
 
-     if(ValidateInput(input))
-         if(InputIsNumber(input)){
-             stringstream ss;
+     if(InputIsNumber(input)){
+         stringstream ss;
 
-             ss << input;
-             ss >> num;
+         ss << input;
+         ss >> num;
 
-             InitializeRecursiveFibonacci(num);
-             InitializeIterativeFibonacci(num);
-         };
+         InitializeRecursiveFibonacci(num);
+         InitializeIterativeFibonacci(num);
+        }
      }
 }
 
