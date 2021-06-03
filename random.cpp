@@ -16,11 +16,10 @@ void DoRandomLoop(int times){
                               0,0,0,0,0,
                               0,0,0,0,0};
 
-    srand(time(0));
+    srand(time(NULL));
 
     for (int i = 0; i < times; ++i) {
         int randomNum = (rand() % 20) +1;
-        cout << randomNum << endl;
         numbers[randomNum] += 1;
     }
 

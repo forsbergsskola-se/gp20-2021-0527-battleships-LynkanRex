@@ -4,6 +4,7 @@
 
 #include "programlist.h"
 #include "fibonacci.h"
+#include "battleships.h"
 #include "random.h"
 
 void PassChoiceToProgramList(int choice){
@@ -14,6 +15,8 @@ void PassChoiceToProgramList(int choice){
         case 2:
             RunRandom();
             break;
+        case 3:
+            RunBattleships();
         default:
             break;
     }
