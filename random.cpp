@@ -15,6 +15,7 @@ void DoRandomLoop(int times){
                               0,0,0,0,0,
                               0,0,0,0,0,
                               0,0,0,0,0};
+    int numberRef = 0;
 
     srand(time(NULL));
 
@@ -25,7 +26,8 @@ void DoRandomLoop(int times){
 
     cout << "Distribution of rolled numbers;" << endl;
     for (const auto& number : numbers) {
-        cout << number << endl;
+        numberRef++;
+        cout << numberRef <<" times rolled: " << number << endl;
     }
 
 }
