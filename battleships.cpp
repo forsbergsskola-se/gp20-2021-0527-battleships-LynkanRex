@@ -91,8 +91,6 @@ void PrintGameplayArea(int (*a)[8], int (*b)[8]){
 bool ValidateShipPlacement(array<char, 2> splitPos, int (*a)[8]){
     array<int,2> splitPosValues = ConvertInputSplitToValues(splitPos);
 
-    cout << "Validating position" << splitPosValues[0] << splitPosValues[1] << endl;
-
     if(splitPosValues[0] >= playAreaSize-1){
         cout << "You cannot enter a position on the bottom line! Try again" << endl;
         return 0;
@@ -106,6 +104,10 @@ bool ValidateShipPlacement(array<char, 2> splitPos, int (*a)[8]){
                     cout << "The selected cell " << i<<j << " is not empty. Try again" << endl;
                     return 0;
                 }
+                else if(a[splitPosValues[0]+1][splitPosValues[1]] != 32){
+                    cout << "The cell after your selection " << i<<j << " is not empty. Try something else" << endl;
+                    return 0;
+                }
             }
         }
     }
@@ -114,10 +116,7 @@ bool ValidateShipPlacement(array<char, 2> splitPos, int (*a)[8]){
 }
 
 void PlaceShip(array<char, 2> position, int (*a)[8]){
-
     array<int,2> positionValues = ConvertInputSplitToValues(position);
-
-    cout << "Positioning ship at " << positionValues[0] << positionValues[1] << endl;
     bool foundTargetCell = false;
 
     for (int i = 0; i <8; ++i) {
