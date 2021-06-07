@@ -7,17 +7,15 @@
 #include <array>
 using namespace std;
 
-const int playAreaSize = 8;
+using playAreaArrayRef = int[8][8];
+using playAreaArrayRefAI = int[8][8];
 
+const int playAreaSize = 8;
 const int SmallCruiser1 = 1;
 const int SmallCruiser2 = 2;
 const int Corsair = 3;
 const int Battleship = 4;
 const int Carrier = 5;
-
-using playAreaArrayRef = int[8][8];
-using playAreaArrayRefAI = int[8][8];
-
 
 class ShipType{
 public:
@@ -32,10 +30,8 @@ public :
     ShipType shipType;
 };
 
-
 void DoBattleshipsLoop();
 Ship* SetupShips(Ship[5]);
-
 
 // Playing Area Setup Declarations
 void InitializeGameplayAreaForPlayer(int(*a)[8][8], Ship[5]);
@@ -56,11 +52,6 @@ array<int,2> ConvertInputSplitToValues(array<char,2>);
 void UpdateGameplayArea(int[8][8],int[8][8]);
 void PrintGameplayArea(int (*a)[8][8], int (*b)[8][8]);
 void PlacementPrintGameplayArea(int [8][8], Ship[5]);
-
-
-
-
-
 
 void PlacementPrintGameplayArea(int (*a)[8], Ship (playerShips)[5]){
     for (int i = 0; i < 8; ++i) {
@@ -92,30 +83,7 @@ void PlacementPrintGameplayArea(int (*a)[8], Ship (playerShips)[5]){
 
 void PrintGameplayArea(int (*a)[8], int (*b)[8], Ship (playerShip)[5], Ship(AIShips)[5]){
 
-    for (int i = 0; i < 8; ++i) {
-        // TODO: Print ABCDEFGH
-        for (int j = 0; j < 8; ++j) {
-            //TODO: Print 12345678
-           if(a[i][j] == 32){
-               cout << " [" << "  " << "] ";
-           }
-           else if(a[i][j] == SmallCruiser1)
-               cout << " [" << playerShip[0].shipType.nameSymbol << "] ";
-           else if(a[i][j] == SmallCruiser2)
-               cout << " [" << playerShip[1].shipType.nameSymbol << "] ";
-           else if(a[i][j] == Corsair)
-               cout << " [" << playerShip[2].shipType.nameSymbol << "] ";
-           else if(a[i][j] == Battleship)
-               cout << " [" << playerShip[3].shipType.nameSymbol << "] ";
-           else if(a[i][j] == Carrier)
-               cout << " [" << playerShip[4].shipType.nameSymbol << "] ";
-           else{
-               cout << " [" << 'x' << "] ";
-           }
-        }
-        cout << endl;
-    }
-    cout << "------------------------" << endl;
+    cout << "Enemy's Playfield;" << endl;
     for (int i = 0; i < 8; ++i) {
         // TODO: Print ABCDEFGH
         for (int j = 0; j < 8; ++j) {
@@ -139,6 +107,32 @@ void PrintGameplayArea(int (*a)[8], int (*b)[8], Ship (playerShip)[5], Ship(AISh
         }
         cout << endl;
     }
+    cout << "------------------------" << endl;
+    cout << "Your Playfield;" << endl;
+    for (int i = 0; i < 8; ++i) {
+        // TODO: Print ABCDEFGH
+        for (int j = 0; j < 8; ++j) {
+            //TODO: Print 12345678
+            if(a[i][j] == 32){
+                cout << " [" << "  " << "] ";
+            }
+            else if(a[i][j] == SmallCruiser1)
+                cout << " [" << playerShip[0].shipType.nameSymbol << "] ";
+            else if(a[i][j] == SmallCruiser2)
+                cout << " [" << playerShip[1].shipType.nameSymbol << "] ";
+            else if(a[i][j] == Corsair)
+                cout << " [" << playerShip[2].shipType.nameSymbol << "] ";
+            else if(a[i][j] == Battleship)
+                cout << " [" << playerShip[3].shipType.nameSymbol << "] ";
+            else if(a[i][j] == Carrier)
+                cout << " [" << playerShip[4].shipType.nameSymbol << "] ";
+            else{
+                cout << " [" << 'x' << "] ";
+            }
+        }
+        cout << endl;
+    }
+
 }
 
 
@@ -266,9 +260,10 @@ array<int,2> ConvertInputSplitToValues(array<char,2> splitInput){
 }
 
 
-void InitializeGameplayAreaForAI(){
-    // TODO: Place AI's ships
+void InitializeGameplayAreaForAI(int (*a)[8][8], Ship (aiShips)[5]){
+    cout << "Enemy is placing their ships..." << endl;
 
+    // TODO: Place AI's ships
 }
 
 
@@ -290,8 +285,6 @@ void InitializeGameplayAreaForPlayer(int (*a)[8][8], Ship (playerShips)[5]){
         string input = "";
         cin >> input;
 
-        // TODO: Add an If-tree for the AI randomized placements
-
         if(ValidateInput(input)){
             array<char,2> splitInput = SplitInput(input);
             if(ValidateShipPlacement(splitInput, *a, playerShips[placedShips]))
@@ -301,8 +294,6 @@ void InitializeGameplayAreaForPlayer(int (*a)[8][8], Ship (playerShips)[5]){
             }
         }
     }
-
-    // TODO: Place AI's ships
 }
 
 
@@ -412,9 +403,12 @@ void DoBattleshipsLoop(){
     SetupShips(AIShips);
 
     InitializeGameplayAreaForPlayer(&playerAreaPlayer, playerShips);
+    InitializeGameplayAreaForAI(&playAreaAI, AIShips);
 
     while(true){
         PrintGameplayArea(playerAreaPlayer, playAreaAI, playerShips, AIShips);
+
+        // TODO: Toggle back and forth between player and AI turn
 
         string input = "";
         cin >> input;
