@@ -17,6 +17,12 @@ const int Corsair = 3;
 const int Battleship = 4;
 const int Carrier = 5;
 
+
+class Cell{
+public:
+    int value = 32;
+};
+
 class ShipType{
 public:
     int size;
@@ -36,7 +42,7 @@ Ship* SetupShips(Ship[5]);
 // Playing Area Setup Declarations
 void InitializeGameplayAreaForPlayer(int(*a)[8][8], Ship[5]);
 void InitializeGameplayAreaForAI();
-bool ValidateShipPlacement(array<char, 2>, playAreaArrayRef);
+bool ValidateShipPlacement(array<char, 3>, playAreaArrayRef);
 void PlaceShip(string position, int(*a)[8][8]);
 
 // Gameplay Logic Declarations
@@ -45,31 +51,32 @@ void AttackCell(int(*a)[8][8]);
 
 // Input validations
 bool ValidateInput(string);
-array<char, 2> SplitInput(string);
+array<char, 3> SplitInput(string);
 array<int,2> ConvertInputSplitToValues(array<char,2>);
+array<int,3> ConvertInputSplitToValues(array<char,3>);
 
 // Printing game state logic
 void UpdateGameplayArea(int[8][8],int[8][8]);
 void PrintGameplayArea(int (*a)[8][8], int (*b)[8][8]);
 void PlacementPrintGameplayArea(int [8][8], Ship[5]);
 
-void PlacementPrintGameplayArea(int (*a)[8], Ship (playerShips)[5]){
+void PlacementPrintGameplayArea(Cell (*a)[8], Ship (playerShips)[5]){
     for (int i = 0; i < 8; ++i) {
         // TODO: Print ABCDEFGH
         for (int j = 0; j < 8; ++j) {
             //TODO: Print 12345678
-            if(a[i][j] == 32){
+            if(a[i][j].value == 32){
                 cout << " [" << "  " << "] ";
             }
-            else if(a[i][j] == SmallCruiser1)
+            else if(a[i][j].value == SmallCruiser1)
                 cout << " [" << playerShips[0].shipType.nameSymbol << "] ";
-            else if(a[i][j] == SmallCruiser2)
+            else if(a[i][j].value == SmallCruiser2)
                 cout << " [" << playerShips[1].shipType.nameSymbol << "] ";
-            else if(a[i][j] == Corsair)
+            else if(a[i][j].value == Corsair)
                 cout << " [" << playerShips[2].shipType.nameSymbol << "] ";
-            else if(a[i][j] == Battleship)
+            else if(a[i][j].value == Battleship)
                 cout << " [" << playerShips[3].shipType.nameSymbol << "] ";
-            else if(a[i][j] == Carrier)
+            else if(a[i][j].value == Carrier)
                 cout << " [" << playerShips[4].shipType.nameSymbol << "] ";
             else{
                 cout << " [" << 'x' << "] ";
@@ -81,25 +88,25 @@ void PlacementPrintGameplayArea(int (*a)[8], Ship (playerShips)[5]){
 
 
 
-void PrintGameplayArea(int (*a)[8], int (*b)[8], Ship (playerShip)[5], Ship(AIShips)[5]){
+void PrintGameplayArea(Cell (*a)[8], Cell (*b)[8], Ship (playerShip)[5], Ship(AIShips)[5]){
 
     cout << "Enemy's Playfield;" << endl;
     for (int i = 0; i < 8; ++i) {
         // TODO: Print ABCDEFGH
         for (int j = 0; j < 8; ++j) {
             //TODO: Print 12345678
-            if(b[i][j] == 32){
+            if(b[i][j].value == 32){
                 cout << " [" << "  " << "] ";
             }
-            else if(a[i][j] == SmallCruiser1)
+            else if(a[i][j].value == SmallCruiser1)
                 cout << " [" << AIShips[0].shipType.nameSymbol << "] ";
-            else if(a[i][j] == SmallCruiser2)
+            else if(a[i][j].value == SmallCruiser2)
                 cout << " [" << AIShips[1].shipType.nameSymbol << "] ";
-            else if(a[i][j] == Corsair)
+            else if(a[i][j].value == Corsair)
                 cout << " [" << AIShips[2].shipType.nameSymbol << "] ";
-            else if(a[i][j] == Battleship)
+            else if(a[i][j].value == Battleship)
                 cout << " [" << AIShips[3].shipType.nameSymbol << "] ";
-            else if(a[i][j] == Carrier)
+            else if(a[i][j].value == Carrier)
                 cout << " [" << AIShips[4].shipType.nameSymbol << "] ";
             else{
                 cout << " [" << 'x' << "] ";
@@ -113,18 +120,18 @@ void PrintGameplayArea(int (*a)[8], int (*b)[8], Ship (playerShip)[5], Ship(AISh
         // TODO: Print ABCDEFGH
         for (int j = 0; j < 8; ++j) {
             //TODO: Print 12345678
-            if(a[i][j] == 32){
+            if(a[i][j].value == 32){
                 cout << " [" << "  " << "] ";
             }
-            else if(a[i][j] == SmallCruiser1)
+            else if(a[i][j].value == SmallCruiser1)
                 cout << " [" << playerShip[0].shipType.nameSymbol << "] ";
-            else if(a[i][j] == SmallCruiser2)
+            else if(a[i][j].value == SmallCruiser2)
                 cout << " [" << playerShip[1].shipType.nameSymbol << "] ";
-            else if(a[i][j] == Corsair)
+            else if(a[i][j].value == Corsair)
                 cout << " [" << playerShip[2].shipType.nameSymbol << "] ";
-            else if(a[i][j] == Battleship)
+            else if(a[i][j].value == Battleship)
                 cout << " [" << playerShip[3].shipType.nameSymbol << "] ";
-            else if(a[i][j] == Carrier)
+            else if(a[i][j].value == Carrier)
                 cout << " [" << playerShip[4].shipType.nameSymbol << "] ";
             else{
                 cout << " [" << 'x' << "] ";
@@ -136,28 +143,55 @@ void PrintGameplayArea(int (*a)[8], int (*b)[8], Ship (playerShip)[5], Ship(AISh
 }
 
 
-bool ValidateShipPlacement(array<char, 2> splitPos, int (*a)[8], Ship shipToPlace){
-    array<int,2> splitPosValues = ConvertInputSplitToValues(splitPos);
+bool ValidateShipPlacement(array<char, 3> splitPos, Cell (*a)[8], Ship shipToPlace){
+    array<int,3> splitPosValues = ConvertInputSplitToValues(splitPos);
+
+    if(splitPosValues[2] = 0){
+        if(splitPosValues[0]+shipToPlace.shipType.size > playAreaSize){
+            cout << "You cannot enter a position on the bottom line! Try again" << endl;
+            return 0;
+        }
 
 
-    if(splitPosValues[0] >= playAreaSize-1){
-        cout << "You cannot enter a position on the bottom line! Try again" << endl;
-        return 0;
-    }
-
-
-    for (int i = 0; i <8; ++i) {
-        for (int j = 0; j < 8; ++j) {
-            if(i == splitPosValues[0] && j == splitPosValues[1]){
-                if(a[splitPosValues[0]][splitPosValues[1]] != 32){
-                    cout << "The selected cell " << i<<j << " is not empty. Try again" << endl;
-                    return 0;
+        for (int i = 0; i <8; ++i) {
+            for (int j = 0; j < 8; ++j) {
+                if(i == splitPosValues[0] && j == splitPosValues[1]){
+                    if(a[splitPosValues[0]][splitPosValues[1]].value != 32){
+                        cout << "The selected cell " << i<<j << " is not empty. Try again" << endl;
+                        return 0;
+                    }
+                    else{
+                        for (int k = 1; k < shipToPlace.shipType.size; ++k) {
+                            if(a[splitPosValues[0]+k][splitPosValues[1]].value != 32){
+                                cout << "Non-empty cells after your selection " << i<<j << "detected. Try something else" << endl;
+                                return 0;
+                            }
+                        }
+                    }
                 }
-                else{
-                    for (int k = 1; k < shipToPlace.shipType.size; ++k) {
-                        if(a[splitPosValues[0]+k][splitPosValues[1]] != 32){
-                            cout << "Non-empty cells after your selection " << i<<j << "detected. Try something else" << endl;
-                            return 0;
+            }
+        }
+    }
+    else{
+        if(splitPosValues[1]+shipToPlace.shipType.size > playAreaSize){
+            cout << "You cannot enter a position on the bottom line! Try again" << endl;
+            return 0;
+        }
+
+
+        for (int i = 0; i <8; ++i) {
+            for (int j = 0; j < 8; ++j) {
+                if(i == splitPosValues[0] && j == splitPosValues[1]){
+                    if(a[splitPosValues[0]][splitPosValues[1]].value != 32){
+                        cout << "The selected cell " << i<<j << " is not empty. Try again" << endl;
+                        return 0;
+                    }
+                    else{
+                        for (int k = 1; k < shipToPlace.shipType.size; ++k) {
+                            if(a[splitPosValues[0]][splitPosValues[1]+k].value != 32){
+                                cout << "Non-empty cells after your selection " << i<<j << "detected. Try something else" << endl;
+                                return 0;
+                            }
                         }
                     }
                 }
@@ -168,23 +202,44 @@ bool ValidateShipPlacement(array<char, 2> splitPos, int (*a)[8], Ship shipToPlac
     return 1;
 }
 
-void PlaceShip(array<char, 2> position, int (*a)[8], Ship shipToPlace){
-    array<int,2> positionValues = ConvertInputSplitToValues(position);
+void PlaceShip(array<char, 3> position, Cell (*a)[8], Ship shipToPlace){
+    array<int,3> positionValues = ConvertInputSplitToValues(position);
     bool foundTargetCell = false;
 
-    for (int i = 0; i <8; ++i) {
-        for (int j = 0; j < 8; ++j) {
-            if(i == positionValues[0] && j == positionValues[1]){
-                a[positionValues[0]][positionValues[1]] = shipToPlace.shipType.numericalSymbol;
-                for (int k = 1; k < shipToPlace.shipType.size; ++k) {
-                    a[positionValues[0]+k][positionValues[1]] = shipToPlace.shipType.numericalSymbol;
+    cout << "Position chars are:" << position[0] << position[1] << position[2] << endl;
+    cout << "Position values are:" << positionValues[0] << positionValues[1] << positionValues[2] << endl;
+
+    if(positionValues[2] == 0){
+        for (int i = 0; i <8; ++i) {
+            for (int j = 0; j < 8; ++j) {
+                if(i == positionValues[0] && j == positionValues[1]){
+                    a[positionValues[0]][positionValues[1]].value = shipToPlace.shipType.numericalSymbol;
+                    for (int k = 1; k < shipToPlace.shipType.size; ++k) {
+                        a[positionValues[0]+k][positionValues[1]].value = shipToPlace.shipType.numericalSymbol;
+                    }
+                    foundTargetCell = true;
+                    break;
                 }
-                foundTargetCell = true;
-                break;
             }
+            if(foundTargetCell) break;
         }
-        if(foundTargetCell) break;
     }
+    else if(positionValues[2] == 1){
+        for (int i = 0; i <8; ++i) {
+            for (int j = 0; j < 8; ++j) {
+                if(i == positionValues[0] && j == positionValues[1]){
+                    a[positionValues[0]][positionValues[1]].value = shipToPlace.shipType.numericalSymbol;
+                    for (int k = 1; k < shipToPlace.shipType.size; ++k) {
+                        a[positionValues[0]][positionValues[1]+k].value = shipToPlace.shipType.numericalSymbol;
+                    }
+                    foundTargetCell = true;
+                    break;
+                }
+            }
+            if(foundTargetCell) break;
+        }
+    }
+
 }
 
 array<int,2> ConvertInputSplitToValues(array<char,2> splitInput){
@@ -219,7 +274,7 @@ array<int,2> ConvertInputSplitToValues(array<char,2> splitInput){
             inputValues[0] = 7;
             break;
         default:
-            inputValues[1] = 0;
+            inputValues[0] = 0;
             break;
     }
 
@@ -259,17 +314,102 @@ array<int,2> ConvertInputSplitToValues(array<char,2> splitInput){
     return inputValues;
 }
 
+array<int,3> ConvertInputSplitToValues(array<char,3> splitInput){
 
-void InitializeGameplayAreaForAI(int (*a)[8][8], Ship (aiShips)[5]){
+    array<int, 3> inputValues;
+
+    splitInput[0] = tolower(splitInput[0]);
+    splitInput[2] = tolower(splitInput[2]);
+
+    switch (splitInput[0]) {
+        case 'a':
+            inputValues[0] = 0;
+            break;
+        case 'b':
+            inputValues[0] = 1;
+            break;
+        case 'c':
+            inputValues[0] = 2;
+            break;
+        case 'd':
+            inputValues[0] = 3;
+            break;
+        case 'e':
+            inputValues[0] = 4;
+            break;
+        case 'f':
+            inputValues[0] = 5;
+            break;
+        case 'g':
+            inputValues[0] = 6;
+            break;
+        case 'h':
+            inputValues[0] = 7;
+            break;
+        default:
+            inputValues[0] = 0;
+            break;
+    }
+
+    int numberizedValue = splitInput[1]-48;
+
+
+    switch (numberizedValue) {
+        case 1:
+            inputValues[1] = 0;
+            break;
+        case 2:
+            inputValues[1] = 1;
+            break;
+        case 3:
+            inputValues[1] = 2;
+            break;
+        case 4:
+            inputValues[1] = 3;
+            break;
+        case 5:
+            inputValues[1] = 4;
+            break;
+        case 6:
+            inputValues[1] = 5;
+            break;
+        case 7:
+            inputValues[1] = 6;
+            break;
+        case 8:
+            inputValues[1] = 7;
+            break;
+        default:
+            inputValues[1] = 0;
+            break;
+    }
+
+    switch (splitInput[2]) {
+        case 'd':
+            inputValues[2] = 0;
+            break;
+        case 'r':
+            inputValues[2] = 1;
+            break;
+        default:
+            inputValues[2] = 10;
+            break;
+    }
+
+    return inputValues;
+}
+
+
+void InitializeGameplayAreaForAI(Cell (*a)[8][8], Ship (aiShips)[5]){
     cout << "Enemy is placing their ships..." << endl;
 
     // TODO: Place AI's ships
 }
 
 
-void InitializeGameplayAreaForPlayer(int (*a)[8][8], Ship (playerShips)[5]){
+void InitializeGameplayAreaForPlayer(Cell (*a)[8][8], Ship (playerShips)[5]){
     bool placementDone = 0;
-    cout << "Placement phase, please enter a coordinate (like A1, F4) where you want to place your ships:" << endl;
+    cout << "Placement phase, please enter a coordinate and rotation (like A1D, F4R) where you want to place your ships:" << endl;
 
     int placedShips = 0;
     int shipsToPlace = 5;
@@ -286,7 +426,7 @@ void InitializeGameplayAreaForPlayer(int (*a)[8][8], Ship (playerShips)[5]){
         cin >> input;
 
         if(ValidateInput(input)){
-            array<char,2> splitInput = SplitInput(input);
+            array<char,3> splitInput = SplitInput(input);
             if(ValidateShipPlacement(splitInput, *a, playerShips[placedShips]))
             {
                 PlaceShip(splitInput, *a, playerShips[placedShips]);
@@ -299,7 +439,7 @@ void InitializeGameplayAreaForPlayer(int (*a)[8][8], Ship (playerShips)[5]){
 
 
 void DoBattleshipsTurn(string input){
-    array<char, 2> splitInput = SplitInput(input);
+    array<char, 3> splitInput = SplitInput(input);
 
     // TODO: Depending on PlayerTurn or AI Turn:
     // PlayerTurn: Attack the inputted coordinate
@@ -310,18 +450,20 @@ void DoBattleshipsTurn(string input){
 
 }
 
-array<char, 2> SplitInput(string input){
-    array<char, 2> splitInput;
+array<char, 3> SplitInput(string input){
+    array<char, 3> splitInput;
 
     splitInput[0] = input[0];
     splitInput[1] = input[1];
+    splitInput[2] = input[2];
 
     return splitInput;
 }
 
+
 bool ValidateInput(string input){
 
-    if(input.length() <= 1 || input.length() >= 3)
+    if(input.length() <= 1 || input.length() >= 4)
     {
         cout << "Input cannot be less or more than 1 character and 1 number (like A1)" << endl;
         return 0;
@@ -336,6 +478,11 @@ bool ValidateInput(string input){
         cout << input[1] << endl;
         cout << (int)input[1] << endl;
         cout << "Second character has to be a a number" << endl;
+        return 0;
+    }
+    if(input[2] != 'D' && input[2] != 'R')
+    {
+        cout << "Last character has to be either D or R for rotation" << endl;
         return 0;
     }
     if((int)input[1]-48 <= 0 || (int)input[1]-48 > playAreaSize){
@@ -377,24 +524,9 @@ Ship* SetupShips(Ship ships[5]){
 
 
 void DoBattleshipsLoop(){
-    int playerAreaPlayer[8][8] = {{32,32,32,32,32,32,32,32},
-                                  {32,32,32,32,32,32,32,32},
-                                  {32,32,32,32,32,32,32,32},
-                                  {32,32,32,32,32,32,32,32},
-                                  {32,32,32,32,32,32,32,32},
-                                  {32,32,32,32,32,32,32,32},
-                                  {32,32,32,32,32,32,32,32},
-                                  {32,32,32,32,32,32,32,32}
-    };
-    int playAreaAI[8][8] = {{32,32,32,32,32,32,32,32},
-                            {32,32,32,32,32,32,32,32},
-                            {32,32,32,32,32,32,32,32},
-                            {32,32,32,32,32,32,32,32},
-                            {32,32,32,32,32,32,32,32},
-                            {32,32,32,32,32,32,32,32},
-                            {32,32,32,32,32,32,32,32},
-                            {32,32,32,32,32,32,32,32}
-    };
+
+    Cell playerAreaPlayer[8][8];
+    Cell playAreaAI[8][8];
 
     Ship playerShips[5];
     Ship AIShips[5];
