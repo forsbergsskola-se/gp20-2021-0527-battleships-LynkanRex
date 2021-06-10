@@ -41,25 +41,27 @@ void DoBattleshipsLoop();
 Ship* SetupShips(Ship[5]);
 
 // Playing Area Setup Declarations
-void InitializeGameplayAreaForPlayer(int(*a)[8][8], Ship[5]);
+void InitializeGameplayAreaForPlayer(Cell(*a)[8][8], Ship[5]);
 void InitializeGameplayAreaForAI();
 bool ValidateShipPlacement(array<char, 3>, playAreaArrayRef);
-void PlaceShip(string position, int(*a)[8][8]);
+void PlaceShip(string position, Cell(*a)[8][8]);
 
 // Gameplay Logic Declarations
 void DoBattleshipsTurn(string);
-void AttackCell(int(*a)[8][8]);
+array<char, 2> TurnSplitInput(string input);
+void AttackCell(Cell(*a)[8][8]);
 
 // Input validations
-bool ValidateInput(string);
+bool ValidateTurnInput(string);
+bool ValidatePlacementInput(string);
 array<char, 3> SplitInput(string);
 array<int,2> ConvertInputSplitToValues(array<char,2>);
 array<int,3> ConvertInputSplitToValues(array<char,3>);
 
 // Printing game state logic
-void UpdateGameplayArea(int[8][8],int[8][8]);
-void PrintGameplayArea(int (*a)[8][8], int (*b)[8][8]);
-void PlacementPrintGameplayArea(int [8][8], Ship[5]);
+void UpdateGameplayArea(Cell[8][8],Cell[8][8]);
+void PrintGameplayArea(Cell (*a)[8][8], Cell (*b)[8][8]);
+void PlacementPrintGameplayArea(Cell [8][8], Ship[5]);
 
 void PlacementPrintGameplayArea(Cell (*a)[8], Ship (playerShips)[5]){
     for (int i = 0; i < 8; ++i) {
@@ -498,7 +500,7 @@ void InitializeGameplayAreaForAI(Cell (*b)[8][8], Ship (aiShips)[5]){
 
         string AIInput = RandomizedAIPlacement();
 
-        if(ValidateInput(AIInput)){
+        if(ValidateTurnInput(AIInput)){
             array<char, 3> AIPlayerPlacementInput = SplitInput(AIInput);
             if(ValidateShipPlacement(AIPlayerPlacementInput, *b, aiShips[placedShips], false)){
                 PlaceShip(AIPlayerPlacementInput, *b, aiShips[placedShips]);
@@ -528,7 +530,7 @@ void InitializeGameplayAreaForPlayer(Cell (*a)[8][8], Ship (playerShips)[5]){
         string input = "";
         cin >> input;
 
-        if(ValidateInput(input)){
+        if(ValidatePlacementInput(input)){
             array<char,3> splitInput = SplitInput(input);
             if(ValidateShipPlacement(splitInput, *a, playerShips[placedShips], true))
             {
@@ -542,7 +544,7 @@ void InitializeGameplayAreaForPlayer(Cell (*a)[8][8], Ship (playerShips)[5]){
 
 
 void DoBattleshipsTurn(string input){
-    array<char, 3> splitInput = SplitInput(input);
+    array<char, 2> splitInput = TurnSplitInput(input);
 
     // TODO: Depending on PlayerTurn or AI Turn:
     // PlayerTurn: Attack the inputted coordinate
@@ -551,6 +553,15 @@ void DoBattleshipsTurn(string input){
         // TODO: Improve AI to detect hit areas and prioritize hitting areas around there
             // TODO: Give AI better valuations based on consecutive hits to improve likelyhood of it continuing to attack a ship
 
+}
+
+array<char, 2> TurnSplitInput(string input){
+    array<char, 2> splitInput;
+
+    splitInput[0] = input[0];
+    splitInput[1] = input[1];
+
+    return splitInput;
 }
 
 array<char, 3> SplitInput(string input){
@@ -564,18 +575,27 @@ array<char, 3> SplitInput(string input){
 }
 
 
-bool ValidateInput(string input){
 
-    if(input.length() <= 1 || input.length() >= 4)
+
+bool CheckInputLength(string input, int maxLength){
+    if(input.length() <= 1 || input.length() >= maxLength)
     {
         cout << "Input cannot be less or more than 1 character and 1 number (like A1)" << endl;
         return 0;
     }
+    return 1;
+}
+
+bool CheckIfFirstIsAlpha(string input){
     if(!isalpha(input[0]))
     {
         cout << "First character has to be a letter between A-H" << endl;
         return 0;
     }
+    return 1;
+}
+
+bool CheckIfSecondIsDigit(string input){
     if(!isdigit(input[1]))
     {
         cout << input[1] << endl;
@@ -583,18 +603,72 @@ bool ValidateInput(string input){
         cout << "Second character has to be a a number" << endl;
         return 0;
     }
+    return 1;
+}
+
+bool CheckIfThirdInputIsDOrR(string input){
     if(input[2] != 'D' && input[2] != 'R')
     {
         cout << "Last character has to be either D or R for rotation" << endl;
         return 0;
     }
+    return 1;
+}
+
+bool CheckIfDigitInputIsGreaterThanPlayAreaSize(string input){
     if((int)input[1]-48 <= 0 || (int)input[1]-48 > playAreaSize){
         cout << "Second number must be between 1 and 8" << endl;
+        return 0;
+    }
+    return 1;
+}
 
+bool ValidatePlacementInput(string input){
+
+    if(!CheckInputLength(input, 4))
+    {
+        return 0;
+    }
+    if(!CheckIfFirstIsAlpha(input))
+    {
+        return 0;
+    }
+    if(!CheckIfSecondIsDigit(input))
+    {
+        return 0;
+    }
+    if(!CheckIfThirdInputIsDOrR(input))
+    {
+        return 0;
+    }
+    if(CheckIfDigitInputIsGreaterThanPlayAreaSize(input)){
+        return 0;
     }
 
     return 1;
 }
+
+bool ValidateTurnInput(string input){
+    if(!CheckInputLength(input, 3))
+    {
+        return 0;
+    }
+    if(!CheckIfFirstIsAlpha(input))
+    {
+        return 0;
+    }
+    if(!CheckIfSecondIsDigit(input))
+    {
+        return 0;
+    }
+    if(CheckIfDigitInputIsGreaterThanPlayAreaSize(input)){
+        return 0;
+    }
+
+    return 1;
+}
+
+
 
 Ship* SetupShips(Ship ships[5]){
 
@@ -640,21 +714,24 @@ void DoBattleshipsLoop(){
     InitializeGameplayAreaForPlayer(&playerAreaPlayer, playerShips);
     InitializeGameplayAreaForAI(&playerAreaAI, AIShips);
 
+    bool playerTurn = true;
+
     while(true){
         PrintGameplayArea(playerAreaPlayer, playerAreaAI, playerShips, AIShips);
 
         // TODO: Toggle back and forth between player and AI turn
+        if(playerTurn){
+            string input = "";
+            cin >> input;
 
-        string input = "";
-        cin >> input;
-
-        if(input == "exit"){
-            cout << "Game over! Thank you for playing!" << endl;
-            break;
-        }
-        else{
-            if(ValidateInput(input))
-                DoBattleshipsTurn(input);
+            if(input == "exit"){
+                cout << "Game over! Thank you for playing!" << endl;
+                break;
+            }
+            else{
+                if(ValidateTurnInput(input))
+                    DoBattleshipsTurn(input);
+            }
         }
     }
 }
