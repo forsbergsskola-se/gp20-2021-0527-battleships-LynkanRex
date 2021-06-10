@@ -146,24 +146,24 @@ void PrintGameplayArea(Cell (*a)[8], Cell (*b)[8], Ship (playerShip)[5], Ship(AI
 bool ValidateShipPlacement(array<char, 3> splitPos, Cell (*a)[8], Ship shipToPlace){
     array<int,3> splitPosValues = ConvertInputSplitToValues(splitPos);
 
-    if(splitPosValues[2] = 0){
+    if(splitPosValues[2] == 0){
         if(splitPosValues[0]+shipToPlace.shipType.size > playAreaSize){
-            cout << "You cannot enter a position on the bottom line! Try again" << endl;
+            cout << "Placing a ship here, with this rotation would overflow downwards" << endl;
             return 0;
         }
 
 
-        for (int i = 0; i <8; ++i) {
-            for (int j = 0; j < 8; ++j) {
+        for (int i = 0; i < playAreaSize; ++i) {
+            for (int j = 0; j < playAreaSize; ++j) {
                 if(i == splitPosValues[0] && j == splitPosValues[1]){
                     if(a[splitPosValues[0]][splitPosValues[1]].value != 32){
-                        cout << "The selected cell " << i<<j << " is not empty. Try again" << endl;
+                        cout << "The selected cell is not empty. Try again" << endl;
                         return 0;
                     }
                     else{
                         for (int k = 1; k < shipToPlace.shipType.size; ++k) {
                             if(a[splitPosValues[0]+k][splitPosValues[1]].value != 32){
-                                cout << "Non-empty cells after your selection " << i<<j << "detected. Try something else" << endl;
+                                cout << "Non-empty cells downards after your selection detected. Try something else" << endl;
                                 return 0;
                             }
                         }
@@ -172,24 +172,24 @@ bool ValidateShipPlacement(array<char, 3> splitPos, Cell (*a)[8], Ship shipToPla
             }
         }
     }
-    else{
+    else if(splitPosValues[2] == 1){
         if(splitPosValues[1]+shipToPlace.shipType.size > playAreaSize){
-            cout << "You cannot enter a position on the bottom line! Try again" << endl;
+            cout << "Placing a ship here, with this rotation would overflow to the right" << endl;
             return 0;
         }
 
 
-        for (int i = 0; i <8; ++i) {
-            for (int j = 0; j < 8; ++j) {
+        for (int i = 0; i < playAreaSize; ++i) {
+            for (int j = 0; j < playAreaSize; ++j) {
                 if(i == splitPosValues[0] && j == splitPosValues[1]){
                     if(a[splitPosValues[0]][splitPosValues[1]].value != 32){
-                        cout << "The selected cell " << i<<j << " is not empty. Try again" << endl;
+                        cout << "The selected cell is not empty. Try again" << endl;
                         return 0;
                     }
                     else{
                         for (int k = 1; k < shipToPlace.shipType.size; ++k) {
                             if(a[splitPosValues[0]][splitPosValues[1]+k].value != 32){
-                                cout << "Non-empty cells after your selection " << i<<j << "detected. Try something else" << endl;
+                                cout << "Non-empty cells to the right of your selection detected. Try something else" << endl;
                                 return 0;
                             }
                         }
@@ -205,9 +205,6 @@ bool ValidateShipPlacement(array<char, 3> splitPos, Cell (*a)[8], Ship shipToPla
 void PlaceShip(array<char, 3> position, Cell (*a)[8], Ship shipToPlace){
     array<int,3> positionValues = ConvertInputSplitToValues(position);
     bool foundTargetCell = false;
-
-    cout << "Position chars are:" << position[0] << position[1] << position[2] << endl;
-    cout << "Position values are:" << positionValues[0] << positionValues[1] << positionValues[2] << endl;
 
     if(positionValues[2] == 0){
         for (int i = 0; i <8; ++i) {
@@ -525,8 +522,8 @@ Ship* SetupShips(Ship ships[5]){
 
 void DoBattleshipsLoop(){
 
-    Cell playerAreaPlayer[8][8];
-    Cell playAreaAI[8][8];
+    Cell playerAreaPlayer[playAreaSize][playAreaSize];
+    Cell playAreaAI[playAreaSize][playAreaSize];
 
     Ship playerShips[5];
     Ship AIShips[5];
