@@ -20,7 +20,7 @@ void DoRandomLoop(int times){
     srand(time(NULL));
 
     for (int i = 0; i < times; ++i) {
-        int randomNum = (rand() % 20) +1;
+        int randomNum = (rand() % 20);
         numbers[randomNum] += 1;
     }
 
